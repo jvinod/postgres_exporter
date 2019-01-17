@@ -245,6 +245,9 @@ var builtinMetricMaps = map[string]map[string]ColumnMapping{
 		"count":           {GAUGE, "number of connections in this state", nil, nil},
 		"max_tx_duration": {GAUGE, "max duration in seconds any active transaction has been running", nil, nil},
 	},
+	"pg_stat_statements": {
+		"max_time": {COUNTER, "max time for a query", nil, nil},
+	},
 }
 
 // OverrideQuery 's are run in-place of simple namespace look ups, and provide
@@ -354,6 +357,13 @@ var queryOverrides = map[string][]OverrideQuery{
 			`,
 		},
 	},
+	"pg_stat_statements": {
+		{
+			semver.MustParseRange(">0.0.0"),
+			`SELECT max_time from postgres_exporter.pg_stat_statements order by max_time desc limit 1`,
+		},
+	},
+
 }
 
 // Convert the query override file to the version-specific query override file
